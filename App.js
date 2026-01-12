@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 
 export default function App () {
   const articles = [
@@ -13,43 +13,19 @@ export default function App () {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container}> 
       <Text style={styles.header}>Minouverse</Text>
       
-      <View style={styles.article}>
-        <Text style={styles.title}>{articles[0].title}</Text>
-        <Text style={styles.description}>{articles[0].description}</Text>
-      </View>
-
-      <View style={styles.article}>
-        <Text style={styles.title}>{articles[1].title}</Text>
-        <Text style={styles.description}>{articles[1].description}</Text>
-      </View>
-
-      <View style={styles.article}>
-        <Text style={styles.title}>{articles[2].title}</Text>
-        <Text style={styles.description}>{articles[2].description}</Text>
-      </View>
-
-      <View style={styles.article}>
-        <Text style={styles.title}>{articles[3].title}</Text>
-        <Text style={styles.description}>{articles[3].description}</Text>
-      </View>
-
-      <View style={styles.article}>
-        <Text style={styles.title}>{articles[4].title}</Text>
-        <Text style={styles.description}>{articles[4].description}</Text>
-      </View>
-
-      <View style={styles.article}>
-        <Text style={styles.title}>{articles[5].title}</Text>
-        <Text style={styles.description}>{articles[5].description}</Text>
-      </View>
-
-      <View style={styles.article}>
-        <Text style={styles.title}>{articles[6].title}</Text>
-        <Text style={styles.description}>{articles[6].description}</Text>
-      </View>
+      <FlatList
+        data={articles}
+        renderItem={({ item }) => (
+          <View style={styles.article}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.description}>{item.description}</Text>
+          </View>
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />
     </View>
   )
 }
@@ -64,4 +40,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555'
   }
-})
+});
