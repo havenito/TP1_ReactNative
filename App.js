@@ -1,7 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, Pressable } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 export default function App () {
+  const handleArticlePress = (article) => {
+    console.log('Article pressé:', article.title);
+    console.log('ID:', article.id);
+    console.log('Description:', article.description);
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
+
   const articles = [
     { id: 1, title: "Les chats persans", description: "Découvrez le charme des chats persans avec leur pelage long et soyeux", image: "https://images.ctfassets.net/denf86kkcx7r/4NreUc61KKZpA4OCU6Y42M/a8d8fdd976ec21f4ff5aa8ffd6db4182/chat_norv_gien_assurance_santevet" },
     { id: 2, title: "L'alimentation féline", description: "Comment bien nourrir votre chat pour qu'il reste en bonne santé", image: "https://litiere-tranquille.com/cdn/shop/articles/guide_frequence_utilisation_litiere_3f8946a5-4012-45e7-909c-77057d052a38.webp?v=1755078165" },
@@ -21,11 +30,17 @@ export default function App () {
       <FlatList
         data={articles}
         renderItem={({ item }) => (
-          <View style={styles.article}>
+          <Pressable 
+            style={({ pressed }) => [
+              styles.article,
+              pressed && styles.articlePressed
+            ]}
+            onPress={() => handleArticlePress(item)}
+          >
             <Image source={{ uri: item.image }} style={styles.image} />
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.description}>{item.description}</Text>
-          </View>
+          </Pressable>
         )}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingVertical: 15 }}
@@ -67,6 +82,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 4
+  },
+  articlePressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.98 }],
+    backgroundColor: '#f8f9fa'
   },
   image: {
     width: '100%',
