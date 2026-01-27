@@ -1,14 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, FlatList, Image, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { Audio } from 'expo-av';
 
 export default function App () {
-  const handleArticlePress = (article) => {
+  const handleArticlePress = async (article) => {
     console.log('Article pressé:', article.title);
     console.log('ID:', article.id);
     console.log('Description:', article.description);
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require('./assets/MEOW.wav')
+      );
+      await sound.playAsync();
+      
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (error) {
+      console.log('Erreur lors de la lecture du son:', error);
+    }
   };
 
   const articles = [
