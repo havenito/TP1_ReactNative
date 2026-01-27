@@ -1,11 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, FlatList, Image, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import { getCatImages } from '../services/catApi';
 
-export default function App ({ navigation }) {
+export default function HomeScreen ({ navigation }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,7 +50,7 @@ export default function App ({ navigation }) {
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <Text style={styles.loadingText}>Chargement des chats...</Text>
+        <Text style={styles.loadingText}>Chargement...</Text>
       </View>
     );
   }
