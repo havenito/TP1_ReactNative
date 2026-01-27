@@ -1,9 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, FlatList, Image, Pressable } from 'react-native';
+import { useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
+import { getCatImages } from '../services/catApi';
 
 export default function App ({ navigation }) {
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    getCatImages()
+      .then(images => {
+        const articlesWithCats = images.map((image) => ({
+          id: image.id,
+          title: image.breeds[0].name,
+          description: image.breeds[0].temperament,
+          image: image.url
+        }));
+        setArticles(articlesWithCats);
+      })
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
   const handleArticlePress = async (article) => {
     console.log('Article pressé:', article.title);
     console.log('ID:', article.id);
@@ -13,7 +34,7 @@ export default function App ({ navigation }) {
 
     try {
       const { sound } = await Audio.Sound.createAsync(
-        require('./assets/MEOW.wav')
+        require('C:\\Users\\enzom\\OneDrive\\Bureau\\React Native\\demo-rn\\assets\\MEOW.wav')
       );
       await sound.playAsync();
       
@@ -27,15 +48,21 @@ export default function App ({ navigation }) {
     }
   };
 
-  const articles = [
-    { id: 1, title: "Les chats persans", description: "Découvrez le charme des chats persans avec leur pelage long et soyeux", image: "https://images.ctfassets.net/denf86kkcx7r/4NreUc61KKZpA4OCU6Y42M/a8d8fdd976ec21f4ff5aa8ffd6db4182/chat_norv_gien_assurance_santevet" },
-    { id: 2, title: "L'alimentation féline", description: "Comment bien nourrir votre chat pour qu'il reste en bonne santé", image: "https://litiere-tranquille.com/cdn/shop/articles/guide_frequence_utilisation_litiere_3f8946a5-4012-45e7-909c-77057d052a38.webp?v=1755078165" },
-    { id: 3, title: "Le langage des chats", description: "Comprendre les miaulements et le langage corporel de votre félin", image: "https://www.aquaportail.com/pictures2307/chat-domestique-europeen.jpg" },
-    { id: 4, title: "Les chats et le jeu", description: "Pourquoi le jeu est essentiel au bien-être de votre chat", image: "https://www.radiofrance.fr/pikapi/images/33fe1bd1-39e9-431f-a932-0bee063e1ec9/1200x680?webp=false" },
-    { id: 5, title: "Le ronronnement", description: "Les secrets du ronronnement et ce qu'il révèle sur votre chat", image: "https://www.fidanimo.com/sites/default/files/styles/large/public/2022-09/chat-affectueux.png?itok=WfoOlAKw" },
-    { id: 6, title: "Adopter un chaton", description: "Tout ce qu'il faut savoir avant d'adopter un chaton", image: "https://images.ctfassets.net/denf86kkcx7r/57uYN7JlyDtQ91KvRldrm9/0a0656983993f5e09c4daa0a4fd8f5e6/comment-punir-son-chat-91" },
-    { id: 7, title: "Les chats d'intérieur", description: "Comment rendre heureux un chat qui vit uniquement en appartement", image: "https://leocare.eu/fr/wp-content/uploads/2025/01/chat-ragdoll.jpg" }
-  ];
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.loadingText}>Chargement des chats...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}> 
@@ -123,5 +150,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 20,
     lineHeight: 24
-  }
+  },
 });
