@@ -45,6 +45,9 @@ export default function HomeScreen ({ navigation }) {
     } catch (error) {
       console.log('Erreur lors de la lecture du son:', error);
     }
+
+    // Navigation vers DetailScreen avec les données du chat
+    navigation.navigate('Detail', { cat: article });
   };
 
   if (loading) {
