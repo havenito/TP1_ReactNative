@@ -1,24 +1,11 @@
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native'
 import React from 'react'
+import CharacteristicBar from '../components/CharacteristicBar'
+import InfoSection from '../components/InfoSection'
+import QuickInfo from '../components/QuickInfo'
 
 export default function DetailScreen({ route, navigation }) {
   const { cat } = route.params;
-
-  const renderLevelBar = (level) => {
-    return (
-      <View style={styles.levelBarContainer}>
-        {[1, 2, 3, 4, 5].map((dot) => (
-          <View
-            key={dot}
-            style={[
-              styles.levelDot,
-              dot <= level ? styles.levelDotActive : styles.levelDotInactive
-            ]}
-          />
-        ))}
-      </View>
-    );
-  };
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -28,60 +15,35 @@ export default function DetailScreen({ route, navigation }) {
         <Text style={styles.title}>{cat.title}</Text>
 
         <View style={styles.quickInfoContainer}>
-          {cat.origin && (
-            <Text style={styles.quickInfoText}> {cat.origin}</Text>
-          )}
-          {cat.lifeSpan && (
-            <Text style={styles.quickInfoText}> {cat.lifeSpan} ans</Text>
-          )}
-          {cat.weight && (
-            <Text style={styles.quickInfoText}> {cat.weight} kg</Text>
-          )}
+          {cat.origin && <QuickInfo icon="🌍" text={cat.origin} />}
+          {cat.lifeSpan && <QuickInfo icon="⏳" text={`${cat.lifeSpan} ans`} />}
+          {cat.weight && <QuickInfo icon="⚖️" text={`${cat.weight} kg`} />}
         </View>
 
         {cat.breedDescription && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Description</Text>
+          <InfoSection title="Description">
             <Text style={styles.description}>{cat.breedDescription}</Text>
-          </View>
+          </InfoSection>
         )}
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Tempérament</Text>
+        <InfoSection title="Tempérament">
           <Text style={styles.description}>{cat.description}</Text>
-        </View>
+        </InfoSection>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Caractéristiques</Text>
-          
+        <InfoSection title="Caractéristiques">
           {cat.affectionLevel !== undefined && (
-            <View style={styles.characteristicRow}>
-              <Text style={styles.characteristicLabel}>Affection</Text>
-              {renderLevelBar(cat.affectionLevel)}
-            </View>
+            <CharacteristicBar label="Affection" level={cat.affectionLevel} />
           )}
-          
           {cat.intelligence !== undefined && (
-            <View style={styles.characteristicRow}>
-              <Text style={styles.characteristicLabel}>Intelligence</Text>
-              {renderLevelBar(cat.intelligence)}
-            </View>
+            <CharacteristicBar label="Intelligence" level={cat.intelligence} />
           )}
-          
           {cat.energyLevel !== undefined && (
-            <View style={styles.characteristicRow}>
-              <Text style={styles.characteristicLabel}>Énergie</Text>
-              {renderLevelBar(cat.energyLevel)}
-            </View>
+            <CharacteristicBar label="Énergie" level={cat.energyLevel} />
           )}
-          
           {cat.childFriendly !== undefined && (
-            <View style={styles.characteristicRow}>
-              <Text style={styles.characteristicLabel}>Enfants</Text>
-              {renderLevelBar(cat.childFriendly)}
-            </View>
+            <CharacteristicBar label="Enfants" level={cat.childFriendly} />
           )}
-        </View>
+        </InfoSection>
 
         <Text style={styles.idText}>ID: {cat.id}</Text>
       </View>
@@ -114,49 +76,10 @@ const styles = StyleSheet.create({
     gap: 15,
     marginBottom: 20,
   },
-  quickInfoText: {
-    fontSize: 15,
-    color: '#6c757d',
-  },
-  section: {
-    marginBottom: 25,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#ff6b6b',
-    marginBottom: 10,
-  },
   description: {
     fontSize: 16,
     color: '#6c757d',
     lineHeight: 24,
-  },
-  characteristicRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    marginBottom: 8,
-  },
-  characteristicLabel: {
-    fontSize: 15,
-    color: '#495057',
-  },
-  levelBarContainer: {
-    flexDirection: 'row',
-    gap: 5,
-  },
-  levelDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  levelDotActive: {
-    backgroundColor: '#ff6b6b',
-  },
-  levelDotInactive: {
-    backgroundColor: '#dee2e6',
   },
   idText: {
     fontSize: 13,

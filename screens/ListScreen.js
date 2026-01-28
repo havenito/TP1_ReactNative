@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View, FlatList, Image, Pressable } from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import { getCatImages } from '../services/catApi';
+import CatCard from '../components/CatCard';
 
 export default function HomeScreen ({ navigation }) {
   const [articles, setArticles] = useState([]);
@@ -82,17 +83,7 @@ export default function HomeScreen ({ navigation }) {
       <FlatList
         data={articles}
         renderItem={({ item }) => (
-          <Pressable 
-            style={({ pressed }) => [
-              styles.article,
-              pressed && styles.articlePressed
-            ]}
-            onPress={() => handleArticlePress(item)}
-          >
-            <Image source={{ uri: item.image }} style={styles.image} />
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.description}>{item.description}</Text>
-          </Pressable>
+          <CatCard cat={item} onPress={handleArticlePress} />
         )}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingVertical: 15 }}
@@ -122,42 +113,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center'
-  },
-  article: {
-    backgroundColor: 'white',
-    marginHorizontal: 20,
-    marginVertical: 10,
-    borderRadius: 15,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4
-  },
-  articlePressed: {
-    opacity: 0.7,
-    transform: [{ scale: 0.98 }],
-    backgroundColor: '#f8f9fa'
-  },
-  image: {
-    width: '100%',
-    height: 220,
-    backgroundColor: '#e9ecef'
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginTop: 15,
-    marginHorizontal: 20,
-    marginBottom: 10,
-    color: '#2c3e50'
-  },
-  description: {
-    fontSize: 16,
-    color: '#6c757d',
-    marginHorizontal: 20,
-    marginBottom: 20,
-    lineHeight: 24
   },
 });
