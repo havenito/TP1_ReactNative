@@ -16,7 +16,16 @@ export default function HomeScreen ({ navigation }) {
           id: image.id,
           title: image.breeds[0].name,
           description: image.breeds[0].temperament,
-          image: image.url
+          image: image.url,
+          breed: image.breeds[0],
+          origin: image.breeds[0].origin,
+          lifeSpan: image.breeds[0].life_span,
+          weight: image.breeds[0].weight?.metric || 'N/A',
+          breedDescription: image.breeds[0].description,
+          affectionLevel: image.breeds[0].affection_level,
+          intelligence: image.breeds[0].intelligence,
+          energyLevel: image.breeds[0].energy_level,
+          childFriendly: image.breeds[0].child_friendly,
         }));
         setArticles(articlesWithCats);
       })
