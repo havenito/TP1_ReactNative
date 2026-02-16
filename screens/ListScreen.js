@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Pressable, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, ActivityIndicator, TextInput } from 'react-native';
 import { useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
@@ -19,6 +19,8 @@ export default function HomeScreen ({ navigation }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [favorites, setFavorites] = useState([]);
   const [reactions, setReactions] = useState([]);
@@ -59,6 +61,11 @@ export default function HomeScreen ({ navigation }) {
 
   const getFavoriteForCat = (catId) => favorites.find((fav) => fav.catId === catId);
   const getReactionForCat = (catId) => reactions.find((rx) => rx.catId === catId);
+
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const filteredArticles = normalizedQuery.length === 0
+    ? articles
+    : articles.filter((article) => (article.title || '').toLowerCase().includes(normalizedQuery));
 
   const handleToggleFavorite = async (cat) => {
     Haptics.selectionAsync();
@@ -179,9 +186,23 @@ export default function HomeScreen ({ navigation }) {
           <Text style={styles.navText}>Voir likes</Text>
         </Pressable>
       </View>
+
+      <View style={styles.searchRow}>
+        <TextInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Rechercher par titre..."
+          placeholderTextColor="#6c757d"
+          style={styles.searchInput}
+          autoCapitalize="none"
+          autoCorrect={false}
+          returnKeyType="search"
+          clearButtonMode="while-editing"
+        />
+      </View>
       
       <FlatList
-        data={articles}
+        data={filteredArticles}
         renderItem={({ item }) => (
           <View>
             <CatCard cat={item} onPress={handleArticlePress} />
@@ -304,6 +325,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 6,
+  },
+  searchRow: {
+    paddingHorizontal: 20,
+    paddingTop: 6,
+    paddingBottom: 10,
+  },
+  searchInput: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    color: '#2c3e50',
   },
   navBtn: {
     backgroundColor: 'white',
