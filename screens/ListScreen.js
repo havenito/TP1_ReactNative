@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Pressable } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
@@ -142,15 +142,18 @@ export default function HomeScreen ({ navigation }) {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
-        <Text style={styles.loadingText}>Chargement...</Text>
+      <View style={[styles.container, styles.loadingContainer]}>
+        <Text style={styles.loadingEmoji}>🐱</Text>
+        <Text style={styles.loadingTitle}>Minouverse</Text>
+        <ActivityIndicator size="large" color="#ff6b6b" />
+        <Text style={styles.loadingText}>Chargement des articles...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
+      <View style={[styles.container, styles.loadingContainer]}>
         <Text style={styles.errorText}>{error}</Text>
       </View>
     );
@@ -240,6 +243,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa'
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  loadingEmoji: {
+    fontSize: 44,
+    marginBottom: 10,
+  },
+  loadingTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#2c3e50',
+    marginBottom: 12,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#6c757d',
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#6c757d',
+    textAlign: 'center',
   },
   header: {
     backgroundColor: '#ff6b6b',
