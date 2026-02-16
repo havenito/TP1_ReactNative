@@ -8,10 +8,14 @@ export default function DetailScreen({ route, navigation }) {
   const { cat } = route.params;
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
       <Image source={{ uri: cat.image }} style={styles.image} />
       
-      <View style={styles.content}>
+      <View style={styles.contentCard}>
         <Text style={styles.title}>{cat.title}</Text>
 
         <View style={styles.quickInfoContainer}>
@@ -56,25 +60,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
+  scrollContent: {
+    paddingBottom: 24,
+  },
   image: {
     width: '100%',
     height: 300,
     backgroundColor: '#e9ecef',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
-  content: {
+  contentCard: {
+    marginTop: -24,
+    marginHorizontal: 16,
     padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: '#2c3e50',
-    marginBottom: 15,
+    marginBottom: 14,
   },
   quickInfoContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 15,
-    marginBottom: 20,
+    gap: 12,
+    marginBottom: 18,
   },
   description: {
     fontSize: 16,
@@ -84,6 +102,7 @@ const styles = StyleSheet.create({
   idText: {
     fontSize: 13,
     color: '#adb5bd',
-    marginTop: 20,
+    marginTop: 18,
+    textAlign: 'center',
   },
 });

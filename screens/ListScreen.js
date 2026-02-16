@@ -105,7 +105,10 @@ export default function HomeScreen ({ navigation }) {
     if (!existing) {
       addReaction({
         catId: cat.id,
+        title: cat.title,
+        image: cat.image,
         value,
+        createdAt: new Date(),
         updatedAt: new Date(),
       });
       return;
@@ -118,7 +121,10 @@ export default function HomeScreen ({ navigation }) {
 
     updateReaction({
       ...existing,
+      title: cat.title,
+      image: cat.image,
       value,
+      createdAt: existing.createdAt || new Date(),
       updatedAt: new Date(),
     });
   };
@@ -150,10 +156,12 @@ export default function HomeScreen ({ navigation }) {
   if (loading) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
-        <Text style={styles.loadingEmoji}>🐱</Text>
-        <Text style={styles.loadingTitle}>Minouverse</Text>
-        <ActivityIndicator size="large" color="#ff6b6b" />
-        <Text style={styles.loadingText}>Chargement des articles...</Text>
+        <View style={styles.loadingCard}>
+          <Text style={styles.loadingEmoji}>🐱</Text>
+          <Text style={styles.loadingTitle}>Minouverse</Text>
+          <ActivityIndicator size="large" color="#ff6b6b" style={styles.loader} />
+          <Text style={styles.loadingText}>Chargement des articles...</Text>
+        </View>
       </View>
     );
   }
@@ -271,15 +279,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
   },
+  loadingCard: {
+    alignItems: 'center',
+    paddingVertical: 26,
+    paddingHorizontal: 28,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    width: '100%',
+    maxWidth: 340,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
   loadingEmoji: {
-    fontSize: 44,
+    fontSize: 48,
     marginBottom: 10,
   },
   loadingTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#2c3e50',
-    marginBottom: 12,
+    color: '#ff6b6b',
+    marginBottom: 8,
+  },
+  loader: {
+    marginTop: 6,
   },
   loadingText: {
     marginTop: 12,

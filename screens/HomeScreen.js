@@ -1,13 +1,9 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useEffect } from 'react'
 
 export default function HomeScreen({ navigation }) {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('Article');
-    }, 5000);
-
-    return () => clearTimeout(timer);
+    navigation.replace('Article');
   }, []);
 
   return (
@@ -16,6 +12,7 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.catEmoji}>🐱</Text>
         <Text style={styles.title}>Minouverse</Text>
         <Text style={styles.subtitle}>Chargement...</Text>
+        <ActivityIndicator size="small" color="#ff6b6b" style={styles.loader} />
       </View>
     </View>
   )
@@ -24,27 +21,41 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f8f9fa',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
   content: {
     alignItems: 'center',
-    padding: 20,
+    paddingVertical: 26,
+    paddingHorizontal: 28,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    width: '100%',
+    maxWidth: 340,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
   catEmoji: {
-    fontSize: 40,
-    marginBottom: 12,
+    fontSize: 48,
+    marginBottom: 10,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '600',
-    color: '#222222',
-    marginBottom: 6,
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#ff6b6b',
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: '#666666',
+    color: '#6c757d',
     textAlign: 'center',
+  },
+  loader: {
+    marginTop: 14,
   },
 });

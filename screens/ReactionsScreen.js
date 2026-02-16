@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Pressable } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { getReactions, updateReaction, deleteReaction } from '../services/fire';
@@ -51,22 +51,25 @@ export default function ReactionsScreen() {
         }
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text style={styles.title}>{labelForValue(item.value)}</Text>
-            <Text style={styles.subtitle}>Cat ID: {item.catId}</Text>
+            {!!item.image && <Image source={{ uri: item.image }} style={styles.image} />}
+            <View style={styles.cardBody}>
+              <Text style={styles.title}>{item.title || labelForValue(item.value)}</Text>
+              <Text style={styles.subtitle}>{labelForValue(item.value)} • Cat ID: {item.catId}</Text>
 
-            <View style={styles.actionsRow}>
-              <Pressable
-                onPress={() => toggleValue(item)}
-                style={({ pressed }) => [styles.actionBtn, pressed && styles.actionBtnPressed]}
-              >
-                <Text style={styles.actionText}>Update</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => handleDelete(item)}
-                style={({ pressed }) => [styles.actionBtn, pressed && styles.actionBtnPressed]}
-              >
-                <Text style={styles.actionText}>Supprimer</Text>
-              </Pressable>
+              <View style={styles.actionsRow}>
+                <Pressable
+                  onPress={() => toggleValue(item)}
+                  style={({ pressed }) => [styles.actionBtn, pressed && styles.actionBtnPressed]}
+                >
+                  <Text style={styles.actionText}>Update</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => handleDelete(item)}
+                  style={({ pressed }) => [styles.actionBtn, pressed && styles.actionBtnPressed]}
+                >
+                  <Text style={styles.actionText}>Supprimer</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
         )}
@@ -112,12 +115,19 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 15,
     overflow: 'hidden',
-    padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 4,
+  },
+  image: {
+    width: '100%',
+    height: 220,
+    backgroundColor: '#e9ecef',
+  },
+  cardBody: {
+    padding: 16,
   },
   title: {
     fontSize: 20,
