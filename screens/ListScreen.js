@@ -1,14 +1,27 @@
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import { getCatImages } from '../services/catApi';
+import {
+  getFavorites,
+  addFavorite,
+  updateFavorite,
+  deleteFavorite,
+  getReactions,
+  addReaction,
+  updateReaction,
+  deleteReaction,
+} from '../services/fire';
 import CatCard from '../components/CatCard';
 
 export default function HomeScreen ({ navigation }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [favorites, setFavorites] = useState([]);
+  const [reactions, setReactions] = useState([]);
 
   useEffect(() => {
     getCatImages()
@@ -33,6 +46,75 @@ export default function HomeScreen ({ navigation }) {
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    const unsubFavorites = getFavorites(setFavorites);
+    const unsubReactions = getReactions(setReactions);
+
+    return () => {
+      if (typeof unsubFavorites === 'function') unsubFavorites();
+      if (typeof unsubReactions === 'function') unsubReactions();
+    };
+  }, []);
+
+  const getFavoriteForCat = (catId) => favorites.find((fav) => fav.catId === catId);
+  const getReactionForCat = (catId) => reactions.find((rx) => rx.catId === catId);
+
+  const handleToggleFavorite = async (cat) => {
+    Haptics.selectionAsync();
+
+    const existing = getFavoriteForCat(cat.id);
+    if (existing) {
+      deleteFavorite(existing);
+      return;
+    }
+
+    addFavorite({
+      catId: cat.id,
+      title: cat.title,
+      image: cat.image,
+      createdAt: new Date(),
+    });
+  };
+
+  const handleUpdateFavorite = async (cat) => {
+    const existing = getFavoriteForCat(cat.id);
+    if (!existing) return;
+
+    Haptics.selectionAsync();
+    updateFavorite({
+      ...existing,
+      title: cat.title,
+      image: cat.image,
+      createdAt: existing.createdAt || new Date(),
+      updatedAt: new Date(),
+    });
+  };
+
+  const setReactionValue = async (cat, value) => {
+    Haptics.selectionAsync();
+
+    const existing = getReactionForCat(cat.id);
+    if (!existing) {
+      addReaction({
+        catId: cat.id,
+        value,
+        updatedAt: new Date(),
+      });
+      return;
+    }
+
+    if (existing.value === value) {
+      deleteReaction(existing);
+      return;
+    }
+
+    updateReaction({
+      ...existing,
+      value,
+      updatedAt: new Date(),
+    });
+  };
 
   const handleArticlePress = async (article) => {
     console.log('Article pressé:', article.title);
@@ -79,11 +161,73 @@ export default function HomeScreen ({ navigation }) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Minouverse</Text>
       </View>
+
+      <View style={styles.navRow}>
+        <Pressable
+          onPress={() => navigation.navigate('Favoris')}
+          style={({ pressed }) => [styles.navBtn, pressed && styles.actionBtnPressed]}
+        >
+          <Text style={styles.navText}>Voir favoris</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate('Likes')}
+          style={({ pressed }) => [styles.navBtn, pressed && styles.actionBtnPressed]}
+        >
+          <Text style={styles.navText}>Voir likes</Text>
+        </Pressable>
+      </View>
       
       <FlatList
         data={articles}
         renderItem={({ item }) => (
-          <CatCard cat={item} onPress={handleArticlePress} />
+          <View>
+            <CatCard cat={item} onPress={handleArticlePress} />
+
+            <View style={styles.actionsRow}>
+              <Pressable
+                onPress={() => handleToggleFavorite(item)}
+                style={({ pressed }) => [styles.actionBtn, pressed && styles.actionBtnPressed]}
+              >
+                <Text style={styles.actionText}>
+                  {getFavoriteForCat(item.id) ? '⭐ Favori' : '☆ Favori'}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => handleUpdateFavorite(item)}
+                disabled={!getFavoriteForCat(item.id)}
+                style={({ pressed }) => [
+                  styles.actionBtn,
+                  !getFavoriteForCat(item.id) && styles.actionBtnDisabled,
+                  pressed && getFavoriteForCat(item.id) && styles.actionBtnPressed,
+                ]}
+              >
+                <Text style={styles.actionText}>Update</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => setReactionValue(item, 1)}
+                style={({ pressed }) => [
+                  styles.actionBtn,
+                  getReactionForCat(item.id)?.value === 1 && styles.actionBtnActive,
+                  pressed && styles.actionBtnPressed,
+                ]}
+              >
+                <Text style={styles.actionText}>👍 Like</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => setReactionValue(item, -1)}
+                style={({ pressed }) => [
+                  styles.actionBtn,
+                  getReactionForCat(item.id)?.value === -1 && styles.actionBtnActive,
+                  pressed && styles.actionBtnPressed,
+                ]}
+              >
+                <Text style={styles.actionText}>👎 Dislike</Text>
+              </Pressable>
+            </View>
+          </View>
         )}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingVertical: 15 }}
@@ -113,5 +257,52 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center'
+  },
+
+  actionsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    paddingHorizontal: 20,
+    marginTop: -5,
+    marginBottom: 10,
+  },
+  navRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 6,
+  },
+  navBtn: {
+    backgroundColor: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+  },
+  navText: {
+    color: '#2c3e50',
+    fontWeight: '700',
+  },
+  actionBtn: {
+    backgroundColor: 'white',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+  },
+  actionBtnPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.98 }],
+  },
+  actionBtnActive: {
+    backgroundColor: '#f8f9fa',
+  },
+  actionBtnDisabled: {
+    opacity: 0.4,
+  },
+  actionText: {
+    color: '#2c3e50',
+    fontWeight: '600',
   },
 });
